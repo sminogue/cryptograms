@@ -1,0 +1,12 @@
+<table class="puzzle">
+{{#each cipherLines}}
+<tr class="puzzleRow">
+{{#each .}}
+<td class="puzzleCell">
+{{#if symbol}}<input class="letterbox sym{{symbol}}" symbol="{{symbol}}" type="text" size="1" maxlength="1"/>{{/if}}
+<div class="cipherLetter">{{symbol}}</div>
+</td>
+{{/each}}
+</tr>
+{{/each}}
+</table>
