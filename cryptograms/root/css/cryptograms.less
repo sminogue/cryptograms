@@ -1,29 +1,73 @@
 @puzzle-font: 'Georgia';
 
-.letterbox {
-	border: 0px;
-	height: 26px;
-	margin: 0px;
-	border: 1px black solid;	
-	padding-top: 2px;
-	width: 22px;
-	font-family: @puzzle-font;
-	text-transform: uppercase;
-	font-size: 18px;
-	text-align: center;
-}
-
-.cipherLetter{
-	font-family: @puzzle-font;
-	text-transform: uppercase;
-	font-size: 18px;
-	width: 22px;
-	text-align: center;
-	margin: 0px;
-	height: 26px;
-	padding-top: 2px;
-}
-
-.puzzleCell {
-	padding-bottom: 10px;	
+.puzzleFrame {
+	background-color: #f1e9d2;
+	padding: 10px 10px 0px 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	
+	.letter-tray {
+		float: left;
+		min-width: 75px;
+		margin: 0px 0px 0px 40px;
+		text-align: center;
+	
+		.letter-tray-title {
+			margin-bottom: 10px;
+			border-bottom-width: 1px;
+			border-bottom-color: black;
+			border-bottom-style: solid;
+			text-align: center;
+			padding-bottom: 5px;
+		}
+	
+		.letter-table{
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 10px;
+			
+			.letter-table-cell{
+				padding: 3px;
+				text-align: center;
+				text-transform: uppercase;
+			}
+		}
+	}
+	
+	.puzzle{
+		float: left;
+		min-width: 70px;
+	
+		.puzzleTable{
+			text-align: center;
+			
+			.puzzleCell {
+				padding-bottom: 10px;	
+				
+				.letterbox {
+					border: 0px;
+					height: 26px;
+					margin: 0px;
+					border: 1px black solid;	
+					padding-top: 2px;
+					width: 22px;
+					font-family: @puzzle-font;
+					text-transform: uppercase;
+					font-size: 18px;
+					text-align: center;
+				}
+				
+				.cipherLetter{
+					font-family: @puzzle-font;
+					text-transform: uppercase;
+					font-size: 18px;
+					width: 22px;
+					text-align: center;
+					margin: 0px;
+					height: 26px;
+					padding-top: 2px;
+				}
+			}
+		}
+	}
 }
