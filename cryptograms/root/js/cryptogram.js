@@ -8,7 +8,9 @@ var cipherLines = {
 	}, {
 		"symbol" : "g"
 	}, {
-		"symbol" : ""
+		"symbol" : ","
+	}, {
+		"symbol" : " "
 	}, {
 		"symbol" : "p"
 	}, {
@@ -24,7 +26,7 @@ var cipherLines = {
 	}, {
 		"symbol" : "g"
 	}, {
-		"symbol" : ""
+		"symbol" : " "
 	}, {
 		"symbol" : "p"
 	}, {
@@ -36,6 +38,8 @@ var cipherLines = {
 
 var alphabet = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ];
+
+var punctuation = RegExp("[,\.-_$%:;'\"]");
 
 //
 // Function called when the document is loaded and ready.
@@ -133,3 +137,15 @@ function updateLetterTray() {
 			'#available-letters');
 
 }
+
+Handlebars.registerHelper('puzzleCell',function(cipherChar){
+	
+	if(punctuation.test(cipherChar)){
+		return new Handlebars.SafeString('<div class="cipherLetter">'+cipherChar+'</div><div class="cipherLetter">'+cipherChar+'</div>');
+	}else if('' === cipherChar || ' ' === cipherChar){
+		return new Handlebars.SafeString('<div class="cipherLetter">'+cipherChar+'</div>');
+	}else{
+		return new Handlebars.SafeString('<input class="letterbox sym'+cipherChar+'" symbol="'+cipherChar+'" type="text" size="1" maxlength="1"/><div class="cipherLetter">'+cipherChar+'</div>');
+	}
+	
+});
