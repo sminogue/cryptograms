@@ -57,7 +57,7 @@ jQuery(document).ready(
 				var char = textField.val();
 
 				if (isLetterUsed(textField)) {
-					textField.val('');
+					jQuery('.sym' + textField.attr('symbol')).val('');
 				} else {
 					jQuery('.sym' + textField.attr('symbol')).val(char);
 					updateLetterTray();
