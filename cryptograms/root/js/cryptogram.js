@@ -141,7 +141,7 @@ function updateLetterTray() {
 Handlebars.registerHelper('puzzleCell',function(cipherChar){
 	
 	if(punctuation.test(cipherChar)){
-		return new Handlebars.SafeString('<div class="cipherLetter">'+cipherChar+'</div><div class="cipherLetter">'+cipherChar+'</div>');
+		return new Handlebars.SafeString('<div class="punctuationLetter">'+cipherChar+'</div>');
 	}else if('' === cipherChar || ' ' === cipherChar){
 		return new Handlebars.SafeString('<div class="cipherLetter">'+cipherChar+'</div>');
 	}else{
