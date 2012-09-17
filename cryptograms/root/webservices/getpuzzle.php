@@ -21,20 +21,20 @@ $rows = array();
 foreach($cipherWords as $cipherWord){
 
 	if($col > 0 &&  $col % 4 == 0){
-		
+
 		array_push($rows, trim(implode(' ',$row)));
 		unset($row);
 		$row = array();
 		array_push($row, $cipherWord);
 		$col = 1;
-		
+
 	}else{
-		
+
 		array_push($row, $cipherWord);
 		$col++;
-		
+
 	}
-	
+
 }
 
 array_push($rows, trim(implode(' ',$row)));
