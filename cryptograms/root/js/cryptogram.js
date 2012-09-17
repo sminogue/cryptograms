@@ -1,47 +1,5 @@
-var cipherLines = null;
 
 
-
-
-/*
-var cipherLines = {
-	"cipherLines" : [ [ {
-		"symbol" : "z"
-	}, {
-		"symbol" : "r"
-	}, {
-		"symbol" : "t"
-	}, {
-		"symbol" : "g"
-	}, {
-		"symbol" : ","
-	}, {
-		"symbol" : " "
-	}, {
-		"symbol" : "p"
-	}, {
-		"symbol" : "l"
-	}, {
-		"symbol" : "r"
-	} ], [ {
-		"symbol" : "z"
-	}, {
-		"symbol" : "r"
-	}, {
-		"symbol" : "t"
-	}, {
-		"symbol" : "g"
-	}, {
-		"symbol" : " "
-	}, {
-		"symbol" : "p"
-	}, {
-		"symbol" : "l"
-	}, {
-		"symbol" : "r"
-	} ] ]
-};
-*/
 var alphabet = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ];
 
@@ -52,7 +10,7 @@ var punctuation = RegExp("[,\.-_$%:;'\"!?]");
 //
 jQuery(document).ready(
 		function() {
-
+			var cipherLines = null;
 			jQuery.ajax({
 				  url: "webservices/getpuzzle.php",
 				  dataType: 'json',
@@ -81,6 +39,43 @@ jQuery(document).ready(
 					updateLetterTray();
 				}
 			});
+			
+			jQuery('#submitButton').click(function(){
+				
+				//Show processing 
+				
+				//Get string of solutuion
+				var solutionString = getSolutionString();
+				
+				//submit synchronous submission
+				
+				
+				jQuery.ajax({
+					  url: "webservices/solvepuzzle.php",
+					  data: {'solution':solutionString},
+					  async: false,
+					  success: function(data){
+						  //Show result
+						  jQuery('#result').html(data);
+					  }
+					});
+				
+			});
+			
+			jQuery('#resetButton').click(function(){
+				
+				jQuery('.letterbox').each(function() {
+
+					var currentField = jQuery(this);
+					currentField.val('');
+
+				});
+				
+				updateLetterTray();
+				
+			});
+			
+			
 		});
 
 function isLetterUsed(textField) {
@@ -101,6 +96,22 @@ function isLetterUsed(textField) {
 
 		}
 
+	});
+
+	return retVal;
+
+}
+
+function getSolutionString() {
+
+	var retVal = '';
+
+	jQuery('.letterbox').each(function() {
+
+		var currentField = jQuery(this);
+
+		retVal += currentField.val();
+		
 	});
 
 	return retVal;
@@ -155,6 +166,7 @@ function updateLetterTray() {
 			'#available-letters');
 
 }
+
 
 Handlebars.registerHelper('puzzleCell',function(cipherChar){
 	

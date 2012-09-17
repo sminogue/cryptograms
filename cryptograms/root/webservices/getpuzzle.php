@@ -1,7 +1,11 @@
 <?php
+session_start();
 
 //Fetch puzzle from DB
 $clearText = "sam i am, i eat green eggs and ham";
+
+//Store puzzle solution in the session
+$_SESSION['solution'] = ereg_replace("[^A-Za-z]", "", $clearText );;
 
 //Create new alphabet
 $cipher = createCipher();
@@ -13,7 +17,6 @@ $cipherText = encryptString($clearText, $cipher);
 $cipherWords = explode(" ", $cipherText);
 
 //Build 2d array of words
-$cipherLines = array();
 $col = 0;
 $row = array();
 $rows = array();
