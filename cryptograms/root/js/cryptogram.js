@@ -1,3 +1,9 @@
+var cipherLines = null;
+
+
+
+
+/*
 var cipherLines = {
 	"cipherLines" : [ [ {
 		"symbol" : "z"
@@ -35,7 +41,7 @@ var cipherLines = {
 		"symbol" : "r"
 	} ] ]
 };
-
+*/
 var alphabet = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ];
 
@@ -47,6 +53,18 @@ var punctuation = RegExp("[,\.-_$%:;'\"!?]");
 jQuery(document).ready(
 		function() {
 
+			jQuery.ajax({
+				  url: "webservices/getpuzzle.php",
+				  dataType: 'json',
+				  async: false,
+				  success: function(data){
+					  cipherLines = data;
+				  }
+				});
+			
+			cipherLines = {
+					"cipherLines" : cipherLines };
+			
 			Handlebars.renderFromRemote('handlebars/puzzle.handlebars',
 					cipherLines, '.puzzle');
 
