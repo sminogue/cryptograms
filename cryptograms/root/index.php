@@ -12,7 +12,6 @@
 <body>
 
 <div class="puzzleFrame">
-<span id="result"></span>
 <div style="margin-left:auto; 
 	    	margin-right:auto; width: 640px;">
 	<div class="puzzle"></div>
@@ -23,7 +22,6 @@
 	<div style="clear: both;"></div>
 </div>
 <div class="controls"><input id="submitButton" type="button" value="Submit"/><input id="resetButton" type="button" value="Reset"/></div>
-</div>	
-
+</div>
 </body>
 </html>

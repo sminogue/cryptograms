@@ -9,9 +9,15 @@ $_SESSION['solution'] = ereg_replace("[^A-Za-z]", "", $clearText );;
 
 //Create new alphabet
 $cipher = createCipher();
+$reverseCipher = reverseCipher($cipher);
+
+$_SESSION['cipher'] = $cipher;
+$_SESSION['reverseCipher'] = $reverseCipher;
 
 //create cipher stream by encrypting cleartext
 $cipherText = encryptString($clearText, $cipher);
+
+$_SESSION['cipherText'] = $cipherText;
 
 //split cipher stream into words
 $cipherWords = explode(" ", $cipherText);
@@ -76,6 +82,19 @@ function encryptString($clearText, $cipher){
 
 	return $encryptedString;
 
+}
+
+function reverseCipher($cipher){
+	
+	$reverseCipher = array();
+	$array_keys = array_keys($cipher);
+	
+	foreach($array_keys as $key){
+		$reverseCipher[$cipher[$key]] = $key;       
+	}
+
+	return $reverseCipher;
+	
 }
 
 function createCipher() {

@@ -1,5 +1,4 @@
 
-
 var alphabet = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ];
 
@@ -12,17 +11,18 @@ jQuery(document).ready(
 		function() {
 			var cipherLines = null;
 			jQuery.ajax({
-				  url: "webservices/getpuzzle.php",
-				  dataType: 'json',
-				  async: false,
-				  success: function(data){
-					  cipherLines = data;
-				  }
-				});
-			
+				url : "webservices/getpuzzle.php",
+				dataType : 'json',
+				async : false,
+				success : function(data) {
+					cipherLines = data;
+				}
+			});
+
 			cipherLines = {
-					"cipherLines" : cipherLines };
-			
+				"cipherLines" : cipherLines
+			};
+
 			Handlebars.renderFromRemote('handlebars/puzzle.handlebars',
 					cipherLines, '.puzzle');
 
@@ -39,43 +39,58 @@ jQuery(document).ready(
 					updateLetterTray();
 				}
 			});
-			
-			jQuery('#submitButton').click(function(){
-				
-				//Show processing 
-				
-				//Get string of solutuion
+
+			jQuery('#submitButton').click(function() {
+
+				// Show processing
+
+				// Get string of solutuion
 				var solutionString = getSolutionString();
-				
-				//submit synchronous submission
-				
-				
+
+				// submit synchronous submission
+
 				jQuery.ajax({
-					  url: "webservices/solvepuzzle.php",
-					  data: {'solution':solutionString},
-					  async: false,
-					  success: function(data){
-						  //Show result
-						  jQuery('#result').html(data);
-					  }
-					});
-				
+					url : "webservices/solvepuzzle.php",
+					data : {
+						'solution' : solutionString
+					},
+					dataType : 'json',
+					async : false,
+					success : function(data) {
+						var thing = '';
+						for(var key in data.reverseCipher){
+							
+							if(data.cipherText.indexOf(key) != -1){
+								
+								showDecryptedChar(key, data.reverseCipher[key]);
+								
+							}
+							
+						}
+					}
+				});
+
 			});
-			
-			jQuery('#resetButton').click(function(){
-				
+
+			jQuery('#resetButton').click(function() {
+
 				jQuery('.letterbox').each(function() {
 
 					var currentField = jQuery(this);
 					currentField.val('');
 
 				});
-				
+
 				updateLetterTray();
-				
+
 			});
-			
-			
+
+			jQuery('#testButton').click(function() {
+
+				showDecryptedChar('c', 'g');
+
+			});
+
 		});
 
 function isLetterUsed(textField) {
@@ -111,7 +126,7 @@ function getSolutionString() {
 		var currentField = jQuery(this);
 
 		retVal += currentField.val();
-		
+
 	});
 
 	return retVal;
@@ -167,15 +182,51 @@ function updateLetterTray() {
 
 }
 
+function showDecryptedChar(cipherChar, clearChar) {
 
-Handlebars.registerHelper('puzzleCell',function(cipherChar){
-	
-	if(punctuation.test(cipherChar)){
-		return new Handlebars.SafeString('<div class="punctuationLetter">'+cipherChar+'</div>');
-	}else if('' === cipherChar || ' ' === cipherChar){
-		return new Handlebars.SafeString('<div class="cipherLetter">'+cipherChar+'</div>');
-	}else{
-		return new Handlebars.SafeString('<input class="letterbox sym'+cipherChar+'" symbol="'+cipherChar+'" type="text" size="1" maxlength="1"/><div class="cipherLetter">'+cipherChar+'</div>');
-	}
-	
-});
+	var counter = 0;
+	var intVal;
+	intVal = setInterval(function() {
+		jQuery('.' + cipherChar).html(alphabet[counter]);
+
+		if (alphabet[counter] === clearChar) {
+			window.clearInterval(intVal);
+			jQuery('.' + cipherChar).html(clearChar);
+			
+			if(jQuery('.sym'+cipherChar).val() === clearChar){
+				jQuery('.sym'+cipherChar).css('background-color','#4EAD1F');
+			}else{
+				jQuery('.sym'+cipherChar).css('background-color','#F76E6E');
+			}
+			
+		}
+		counter++;
+	}, 100);
+
+}
+
+Handlebars
+		.registerHelper(
+				'puzzleCell',
+				function(cipherChar) {
+
+					if (punctuation.test(cipherChar)) {
+						return new Handlebars.SafeString(
+								'<div class="punctuationLetter">' + cipherChar
+										+ '</div>');
+					} else if ('' === cipherChar || ' ' === cipherChar) {
+						return new Handlebars.SafeString(
+								'<div class="cipherLetter">' + cipherChar
+										+ '</div>');
+					} else {
+						return new Handlebars.SafeString(
+								'<input class="letterbox sym'
+										+ cipherChar
+										+ '" symbol="'
+										+ cipherChar
+										+ '" type="text" size="1" maxlength="1"/><div class="cipherLetter '
+										+ cipherChar + '">' + cipherChar
+										+ '</div>');
+					}
+
+				});
