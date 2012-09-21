@@ -23,10 +23,38 @@ jQuery(document).ready(function() {
 		resetPuzzle();
 	});
 
+	jQuery('#settings').click(function(){
+		showSettingsPane();
+	});
+	
+	jQuery('#closeSettingsButton').click(function(){
+		closeSettingsPane();
+	});
+	
 	// Load initial puzzle
 	loadPuzzle();
 
 });
+
+/*
+ * Close the settings modal panel
+ */
+function closeSettingsPane(){
+	jQuery('.modalBackGround').hide();
+	jQuery('#settingsPane').hide();
+	jQuery('#submitButton').show();
+	jQuery('#resetButton').show();
+}
+
+/*
+ * Show the settings modal panel
+ */
+function showSettingsPane(){
+	jQuery('.modalBackGround').show();
+	jQuery('#settingsPane').show();
+	jQuery('#submitButton').hide();
+	jQuery('#resetButton').hide();
+}
 
 /*
  * Handle a user entering a letter into one of the textfields. If the letter is

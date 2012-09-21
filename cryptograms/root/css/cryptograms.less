@@ -1,10 +1,78 @@
 @puzzle-font: 'Georgia';
 
+.modalBackGround {
+	filter: Alpha(Opacity=60); 
+	-moz-opacity:0.6; 
+	opacity: 0.6;
+    width: 100%; 
+    height: 100%; 
+    background-color: grey;
+    position: absolute;
+    z-index: 500;
+    top: 0px; 
+    left: 0px;
+    display: none;
+}
+
+#settingsPane {
+	width: 80%;
+	height: 80%;
+}
+
+.modalDialog {
+	position: absolute;
+	background-color: #FFF;
+	border: 1px;
+	border-style: solid;
+	border-color: black;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	display: none;
+	left: 10%;
+    top: 10%;
+    z-index: 750;
+}
+
+.button:hover {
+	cursor: pointer;
+}
+
+.closeButton {
+	float: right;
+	margin: 10px 10px 10px 10px;
+ 	background-color:white;
+ 	background-image:url('../images/close32.png');
+ 	background-repeat: no-repeat;
+ 	background-position: center;
+	width: 32px;
+	height: 32px;	
+}
+
 .puzzleFrame {
 	background-color: #f1e9d2;
 	padding: 10px 10px 0px 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
+	
+	.controls{
+		height: 32px;
+	}
+	
+	#settings{
+		float: right;
+		margin: 10px 10px 10px 10px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		-moz-box-shadow:    0px 0px 3px 3px grey;
+  		-webkit-box-shadow: 0px 0px 3px 3px grey;
+  		box-shadow:         0px 0px 3px 3px grey;
+  		background-color:white;
+  		background-image:url('../images/configure.png');
+  		background-repeat: no-repeat;
+  		background-position: center;
+		width: 40px;
+		height: 40px;
+	}
 	
 	.letter-tray {
 		float: left;
