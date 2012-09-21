@@ -1,98 +1,127 @@
-
+//Alphabet, used as the basis for available letters.
 var alphabet = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 		'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ];
 
+// Regex used to identify punctuation. This will be used in the handlebars
+// handler in deciding how a char should be displayed.
 var punctuation = RegExp("[,\.-_$%:;'\"!?]");
 
-//
-// Function called when the document is loaded and ready.
-//
-jQuery(document).ready(
-		function() {
-			var cipherLines = null;
-			jQuery.ajax({
-				url : "webservices/getpuzzle.php",
-				dataType : 'json',
-				async : false,
-				success : function(data) {
-					cipherLines = data;
+// Function called when the document is loaded and ready. It will bind controls
+// and set up the initial display of the UI.
+jQuery(document).ready(function() {
+
+	// Bind controls
+	jQuery('.letterbox').keyup(function() {
+		handleKeyEntry();
+	});
+
+	jQuery('#submitButton').click(function() {
+		solvePuzzle();
+	});
+
+	jQuery('#resetButton').click(function() {
+		resetPuzzle();
+	});
+
+	// Load initial puzzle
+	loadPuzzle();
+
+});
+
+/*
+ * Handle a user entering a letter into one of the textfields. If the letter is
+ * used then remove it, if the letter is unused then update the entire puzzle
+ * with their choice.
+ */
+function handleKeyEntry() {
+	var textField = jQuery(this);
+	var char = textField.val();
+
+	if (isLetterUsed(textField)) {
+		jQuery('.sym' + textField.attr('symbol')).val('');
+	} else {
+		jQuery('.sym' + textField.attr('symbol')).val(char);
+		updateLetterTray();
+	}
+}
+
+/*
+ * Reset the puzzle by clearing choices.
+ */
+function resetPuzzle() {
+	jQuery('.letterbox').each(function() {
+		var currentField = jQuery(this);
+		currentField.val('');
+	});
+	updateLetterTray();
+}
+
+/*
+ * Call the server and fetch a new puzzle, then update the UI to show the new
+ * puzzle.
+ */
+function loadPuzzle() {
+	var cipherLines = null;
+	jQuery.ajax({
+		url : "webservices/getpuzzle.php",
+		dataType : 'json',
+		async : false,
+		success : function(data) {
+			cipherLines = data;
+		}
+	});
+
+	cipherLines = {
+		"cipherLines" : cipherLines
+	};
+
+	Handlebars.renderFromRemote('handlebars/puzzle.handlebars', cipherLines,
+			'.puzzle');
+
+	updateLetterTray();
+}
+
+/*
+ * Submit a puzzle to the server for validation that the entered solution is
+ * correct or incorrect
+ */
+function solvePuzzle() {
+
+	// Hide submit and reset buttons
+
+	// Show next button
+
+	// Show processing
+
+	// Get string of solutuion
+	var solutionString = getSolutionString();
+
+	// submit synchronous submission
+	jQuery.ajax({
+		url : "webservices/solvepuzzle.php",
+		data : {
+			'solution' : solutionString
+		},
+		dataType : 'json',
+		async : false,
+		success : function(data) {
+			var thing = '';
+			for ( var key in data.reverseCipher) {
+
+				if (data.cipherText.indexOf(key) != -1) {
+
+					showDecryptedChar(key, data.reverseCipher[key]);
+
 				}
-			});
 
-			cipherLines = {
-				"cipherLines" : cipherLines
-			};
+			}
+		}
+	});
+}
 
-			Handlebars.renderFromRemote('handlebars/puzzle.handlebars',
-					cipherLines, '.puzzle');
-
-			updateLetterTray();
-
-			jQuery('.letterbox').keyup(function() {
-				var textField = jQuery(this);
-				var char = textField.val();
-
-				if (isLetterUsed(textField)) {
-					jQuery('.sym' + textField.attr('symbol')).val('');
-				} else {
-					jQuery('.sym' + textField.attr('symbol')).val(char);
-					updateLetterTray();
-				}
-			});
-
-			jQuery('#submitButton').click(function() {
-
-				// Show processing
-
-				// Get string of solutuion
-				var solutionString = getSolutionString();
-
-				// submit synchronous submission
-
-				jQuery.ajax({
-					url : "webservices/solvepuzzle.php",
-					data : {
-						'solution' : solutionString
-					},
-					dataType : 'json',
-					async : false,
-					success : function(data) {
-						var thing = '';
-						for(var key in data.reverseCipher){
-							
-							if(data.cipherText.indexOf(key) != -1){
-								
-								showDecryptedChar(key, data.reverseCipher[key]);
-								
-							}
-							
-						}
-					}
-				});
-
-			});
-
-			jQuery('#resetButton').click(function() {
-
-				jQuery('.letterbox').each(function() {
-
-					var currentField = jQuery(this);
-					currentField.val('');
-
-				});
-
-				updateLetterTray();
-
-			});
-
-			jQuery('#testButton').click(function() {
-
-				showDecryptedChar('c', 'g');
-
-			});
-
-		});
-
+/*
+ * Test if a letter has already been used.
+ */
 function isLetterUsed(textField) {
 
 	var retVal = false;
@@ -117,6 +146,10 @@ function isLetterUsed(textField) {
 
 }
 
+/*
+ * Build string from letter entries. This will be sent to the server to
+ * determine if it is the correct answer.
+ */
 function getSolutionString() {
 
 	var retVal = '';
@@ -133,6 +166,9 @@ function getSolutionString() {
 
 }
 
+/*
+ * Get un-used letters.
+ */
 function getAvailableLetters() {
 	var availableLetters = _.uniq(alphabet);
 
@@ -152,6 +188,11 @@ function getAvailableLetters() {
 
 }
 
+/*
+ * The panel showing available letters is the "lettertray" this function will
+ * update it to reflect what letters have been used or returned to the pool of
+ * available.
+ */
 function updateLetterTray() {
 
 	var col = 0;
@@ -182,6 +223,11 @@ function updateLetterTray() {
 
 }
 
+/*
+ * Function which will show the "spinning" chars below the text boxes for a
+ * particular cipher character. At the end of this function the correct answer
+ * for a cipher character will be displayed.
+ */
 function showDecryptedChar(cipherChar, clearChar) {
 
 	var counter = 0;
@@ -192,19 +238,22 @@ function showDecryptedChar(cipherChar, clearChar) {
 		if (alphabet[counter] === clearChar) {
 			window.clearInterval(intVal);
 			jQuery('.' + cipherChar).html(clearChar);
-			
-			if(jQuery('.sym'+cipherChar).val() === clearChar){
-				jQuery('.sym'+cipherChar).css('background-color','#4EAD1F');
-			}else{
-				jQuery('.sym'+cipherChar).css('background-color','#F76E6E');
+
+			if (jQuery('.sym' + cipherChar).val() === clearChar) {
+				jQuery('.sym' + cipherChar).css('background-color', '#4EAD1F');
+			} else {
+				jQuery('.sym' + cipherChar).css('background-color', '#F76E6E');
 			}
-			
+
 		}
 		counter++;
 	}, 100);
 
 }
 
+/*
+ * Register handlebars helper to display a puzzleCell.
+ */
 Handlebars
 		.registerHelper(
 				'puzzleCell',
