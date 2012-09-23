@@ -12,48 +12,83 @@ jQuery(document).ready(function() {
 
 	// Bind controls
 	jQuery('.letterbox').keyup(function() {
-		handleKeyEntry();
+		try {
+			handleKeyEntry();
+		} catch (e) {
+			window.location = 'error.html';
+		}
 	});
 
 	jQuery('#submitButton').click(function() {
-		solvePuzzle();
+		try {
+			solvePuzzle();
+		} catch (e) {
+			window.location = 'error.html';
+		}
 	});
 
 	jQuery('#resetButton').click(function() {
-		resetPuzzle();
+		try {
+			resetPuzzle();
+		} catch (e) {
+			window.location = 'error.html';
+		}
 	});
 
-	jQuery('#settings').click(function(){
-		showSettingsPane();
+	jQuery('#settings').click(function() {
+		try {
+			showSettingsPane();
+		} catch (e) {
+			window.location = 'error.html';
+		}
 	});
-	
-	jQuery('#closeSettingsButton').click(function(){
-		closeSettingsPane();
+
+	jQuery('#closeSettingsButton').click(function() {
+		try {
+			closeSettingsPane();
+		} catch (e) {
+			window.location = 'error.html';
+		}
 	});
-	
+
 	// Load initial puzzle
-	loadPuzzle();
+	try {
+		loadPuzzle();
+	} catch (e) {
+		window.location = 'error.html';
+	}
 
 });
 
 /*
  * Close the settings modal panel
  */
-function closeSettingsPane(){
-	jQuery('.modalBackGround').hide();
+function closeSettingsPane() {
 	jQuery('#settingsPane').hide();
-	jQuery('#submitButton').show();
-	jQuery('#resetButton').show();
+	hideModalBackGround();
+}
+
+/*
+ * Function to show the opaque background which surrounds a modal dialog.
+ */
+function showModalBackGround() {
+	jQuery('.modalBackGround').show();
+}
+
+/*
+ * Function to hide the opaque background which surrounds a modal dialog.
+ */
+function hideModalBackGround() {
+	jQuery('.modalDialog').hide();
+	jQuery('.modalBackGround').hide();
 }
 
 /*
  * Show the settings modal panel
  */
-function showSettingsPane(){
-	jQuery('.modalBackGround').show();
+function showSettingsPane() {
+	showModalBackGround();
 	jQuery('#settingsPane').show();
-	jQuery('#submitButton').hide();
-	jQuery('#resetButton').hide();
 }
 
 /*

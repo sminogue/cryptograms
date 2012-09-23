@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Error</title>
+
+<style type="text/css">
+.errorPanel {
+	padding: 20px;
+}
+
+.errorTitle {
+	font-size: x-large;
+	border-bottom-width: 1px;
+	border-bottom-color: black;
+	border-bottom-style: solid;
+	color: red;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
+	font-weight: bold;
+}
+
+.errorDescription {
+	font-style: italic;
+}
+
+.errorDescription .controls {
+	text-align: center;
+	margin-top: 25px;
+}
+</style>
+
+</head>
+<body>
+
+	<div class="errorPanel">
+		<div class="errorTitle">Error</div>
+		<div class="errorDescription">
+			An error occurred while attempting your last operation. We apologize for the inconvenience, if this problem persists please let us know.
+			<div class="controls">
+				<input type="button" value="Try Again" onclick="window.location = 'index.html';" />
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
