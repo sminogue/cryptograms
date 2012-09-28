@@ -6,18 +6,15 @@ var alphabet = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 // handler in deciding how a char should be displayed.
 var punctuation = RegExp("[,\.-_$%:;'\"!?]");
 
+// Settings configuration
+var showLetterTray = true;
+var showAnimatedSolution = true;
+
 // Function called when the document is loaded and ready. It will bind controls
 // and set up the initial display of the UI.
 jQuery(document).ready(function() {
 
 	// Bind controls
-	jQuery('.letterbox').keyup(function() {
-		try {
-			handleKeyEntry();
-		} catch (e) {
-			window.location = 'error.html';
-		}
-	});
 
 	jQuery('#submitButton').click(function() {
 		try {
@@ -51,6 +48,14 @@ jQuery(document).ready(function() {
 		}
 	});
 
+	jQuery('#saveButton').click(function() {
+		try {
+			saveSettings();
+		} catch (e) {
+			window.location = 'error.html';
+		}
+	});
+
 	// Load initial puzzle
 	try {
 		loadPuzzle();
@@ -59,6 +64,23 @@ jQuery(document).ready(function() {
 	}
 
 });
+
+function saveSettings() {
+
+	// Get selections
+	showLetterTray = jQuery("#letter-tray").is(':checked');
+	showAnimatedSolution = jQuery("#animation").is(':checked');
+
+	// Show/Hide letter tray
+	if (showLetterTray) {
+		jQuery('.letter-tray').show();
+		updateLetterTray();
+	} else {
+		jQuery('.letter-tray').hide();
+	}
+
+	closeSettingsPane();
+}
 
 /*
  * Close the settings modal panel
@@ -96,8 +118,8 @@ function showSettingsPane() {
  * used then remove it, if the letter is unused then update the entire puzzle
  * with their choice.
  */
-function handleKeyEntry() {
-	var textField = jQuery(this);
+function handleKeyEntry(thisfield) {
+	var textField = jQuery(thisfield);
 	var char = textField.val();
 
 	if (isLetterUsed(textField)) {
@@ -140,6 +162,14 @@ function loadPuzzle() {
 
 	Handlebars.renderFromRemote('handlebars/puzzle.handlebars', cipherLines,
 			'.puzzle');
+
+	jQuery('.letterbox').keyup(function() {
+		try {
+			handleKeyEntry(this);
+		} catch (e) {
+			window.location = 'error.html';
+		}
+	});
 
 	updateLetterTray();
 }
@@ -258,6 +288,10 @@ function getAvailableLetters() {
  */
 function updateLetterTray() {
 
+	if (!showLetterTray) {
+		return;
+	}
+
 	var col = 0;
 	var rows = [];
 	var row = [];
@@ -293,24 +327,43 @@ function updateLetterTray() {
  */
 function showDecryptedChar(cipherChar, clearChar) {
 
-	var counter = 0;
-	var intVal;
-	intVal = setInterval(function() {
-		jQuery('.' + cipherChar).html(alphabet[counter]);
+	if (!showAnimatedSolution) {
+		var counter;
+		for (counter = 0; counter < 26; counter++) {
+			if (alphabet[counter] === clearChar) {
+				jQuery('.' + cipherChar).html(clearChar);
 
-		if (alphabet[counter] === clearChar) {
-			window.clearInterval(intVal);
-			jQuery('.' + cipherChar).html(clearChar);
-
-			if (jQuery('.sym' + cipherChar).val() === clearChar) {
-				jQuery('.sym' + cipherChar).css('background-color', '#4EAD1F');
-			} else {
-				jQuery('.sym' + cipherChar).css('background-color', '#F76E6E');
+				if (jQuery('.sym' + cipherChar).val() === clearChar) {
+					jQuery('.sym' + cipherChar).css('background-color',
+							'#4EAD1F');
+				} else {
+					jQuery('.sym' + cipherChar).css('background-color',
+							'#F76E6E');
+				}
 			}
-
 		}
-		counter++;
-	}, 100);
+	} else {
+		var counter = 0;
+		var intVal;
+		intVal = setInterval(function() {
+			jQuery('.' + cipherChar).html(alphabet[counter]);
+
+			if (alphabet[counter] === clearChar) {
+				window.clearInterval(intVal);
+				jQuery('.' + cipherChar).html(clearChar);
+
+				if (jQuery('.sym' + cipherChar).val() === clearChar) {
+					jQuery('.sym' + cipherChar).css('background-color',
+							'#4EAD1F');
+				} else {
+					jQuery('.sym' + cipherChar).css('background-color',
+							'#F76E6E');
+				}
+
+			}
+			counter++;
+		}, 100);
+	}
 
 }
 
