@@ -1,8 +1,20 @@
 <?php
 session_start();
 
+// Include the main Propel script
+require_once '/usr/local/propelorm/runtime/lib/Propel.php';
+
+// Initialize Propel with the runtime configuration
+Propel::init("../build/conf/cryptogram-conf.php");
+	
+// Add the generated 'classes' directory to the include path
+set_include_path("../build/classes" . PATH_SEPARATOR . get_include_path());
+
 //Fetch puzzle from DB
-$clearText = "sam i am, i eat green eggs and ham";
+$cryptogram = CryptogramQuery::create()
+	->findPk(1);
+
+$clearText = $cryptogram->getClearText();
 
 //Store puzzle solution in the session
 $_SESSION['solution'] = ereg_replace("[^A-Za-z]", "", $clearText );;
