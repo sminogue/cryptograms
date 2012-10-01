@@ -19,10 +19,6 @@
 	height: 100px;
 	left: 10%;
     top: 10%;
-    
-    #settingsPaneContent {
-    	padding: 20px;
-	}
 	
 	.settings-controls {
 	    position: absolute;
@@ -33,12 +29,25 @@
 	}
 	
 	table {
+		width: 80%;
 		tr {
 			td {
 				padding-right:30px;
 			}
 		}
 	}
+}
+
+.instructions {
+	font-size: 12px;
+	font-style: italic;	
+}
+
+#loginDialog {
+	width: 350px;
+	height: 250px;
+	left: 40%;
+	top: 35%;
 }
 
 .modalDialog {
@@ -51,13 +60,18 @@
 	border-radius: 10px;
 	display: none;
     z-index: 750;
+    
+    .modal-content {
+    	padding: 20px;
+	}
+    
 }
 
 .button:hover {
 	cursor: pointer;
 }
 
-.closeButton {
+.closeModalX {
 	float: right;
 	margin: 10px 10px 10px 10px;
  	background-color:white;
@@ -68,11 +82,42 @@
 	height: 32px;	
 }
 
+.loginBar{
+	position: absolute;
+	top: 0px;
+	left:0px;
+	text-align: right;
+	padding-top:4px;
+	padding-bottom:2px;
+	background-color: #99CCFF;	
+	width:100%;
+	font-size: 14px;
+	height: 20px;
+	border-bottom-color: black;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	
+	span {
+		margin-right:20px;
+		
+		a:visited {
+			color: #FF6600;
+		}
+		
+		a {
+		color: #FF6600;
+		}
+		
+	}
+	
+}
+
 .puzzleFrame {
 	background-color: #f1e9d2;
 	padding: 10px 10px 0px 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
+	margin-top:47px;
 	
 	.controls{
 		height: 32px;

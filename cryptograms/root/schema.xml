@@ -6,4 +6,9 @@
     <column name="clearText" phpName="Cleartext" type="VARCHAR" size="500" required="true"/>
     <column name="hints" phpName="Hints" type="VARCHAR" size="10" required="false"/>
   </table>
+  <table name="user" phpName="User" idMethod="native">
+    <column name="id" phpName="Id" type="INTEGER" size="10" sqlType="int(10) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="email" phpName="Email" type="VARCHAR" size="100" required="true"/>
+    <column name="password" phpName="Password" type="VARCHAR" size="128" required="true"/>
+  </table>
 </database>

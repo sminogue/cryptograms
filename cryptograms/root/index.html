@@ -1,6 +1,7 @@
 <html>
 <head>
 <link rel="stylesheet/less" type="text/css" href="css/cryptograms.less">
+<link rel="stylesheet" type="text/css" href="css/persona-buttons.css" />
 <script src="js/libs/less-1.3.0.min.js" type="text/javascript"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.1/jquery.min.js" type="text/javascript"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0.beta6/handlebars.min.js" type="text/javascript"></script>
@@ -8,6 +9,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.2/jquery.cookie.js" type="text/javascript"></script>
 <script src="js/handlebars-remote-template.js" type="text/javascript"></script>
 <script src="js/cryptogram.js" type="text/javascript"></script>
+<script src="https://login.persona.org/include.js"></script>
 
 <script type="text/javascript">
 	if (!window.jQuery || !window.Handlebars || !window._) {
@@ -17,10 +19,53 @@
 
 </head>
 <body>
+	<div class="loginBar">
+		<span><a id="logoutLink" href="#" onclick="showLogin(); return false;" >Login</a><a style="display:none;" id="logoutLink" href="#" onclick="return false;" >Logout</a></span>
+	</div>
+	<div style="clear: both;"></div>
+	<div class="puzzleFrame">
+		<div id="settings" class="button"></div>
+		<div style="margin-left: auto; margin-right: auto; width: 640px;">
+			<div class="puzzle"></div>
+			<div class="letter-tray">
+				<div class="letter-tray-title">Available Letters</div>
+				<div id="available-letters"></div>
+			</div>
+			<div style="clear: both;"></div>
+		</div>
+		<div id="controlBar" class="controls">
+			<input id="submitButton" type="button" value="Submit" /><input id="resetButton" type="button" value="Reset" />
+		</div>
+	</div>
+	
+	<!-- Dialogs -->
 	<div class="modalBackGround"></div>
+	
+	<!-- Login Dialog -->
+	<div id="loginDialog" class="modalDialog">
+		<div id="closeLoginButton" class="closeModalX button"></div>
+		<div class="modal-content">
+			<div>
+				<span class="instructions">Sign in using your username and password</span>
+				<br>
+				<input type="text" size="40" id="userEmail"/><br>
+				<input type="password" size="40" id="userPassword"/><br>
+				<input type="button" value="Sign In"><input type="button" value="Register">
+			</div>
+			<hr>
+			<div style="margin-top: 15px;">
+			<span class="instructions">Sign in using Mozilla&apos;s persona</span>
+			<br>
+			<a href="#" class="persona-button" onclick="navigator.id.request();"><span>Sign In</span></a>
+			</div>
+			
+		</div>
+	</div>
+	
+	<!-- Settings panel dialog -->
 	<div id="settingsPane" class="modalDialog">
-		<div id="closeSettingsButton" class="closeButton button"></div>
-		<div id="settingsPaneContent">
+		<div id="closeSettingsButton" class="closeModalX button"></div>
+		<div id="settingsPaneContent" class="modal-content">
 			<table>
 				<tr>
 					<td class="setting-cell">
@@ -36,19 +81,6 @@
 			<input type="button" id="saveButton" value="Save"/>
 		</div>
 	</div>
-	<div class="puzzleFrame">
-		<div id="settings" class="button"></div>
-		<div style="margin-left: auto; margin-right: auto; width: 640px;">
-			<div class="puzzle"></div>
-			<div class="letter-tray">
-				<div class="letter-tray-title">Available Letters</div>
-				<div id="available-letters"></div>
-			</div>
-			<div style="clear: both;"></div>
-		</div>
-		<div id="controlBar" class="controls">
-			<input id="submitButton" type="button" value="Submit" /><input id="resetButton" type="button" value="Reset" />
-		</div>
-	</div>
+	<input type="button" value="persona" onclick=" navigator.id.logout();">
 </body>
 </html>

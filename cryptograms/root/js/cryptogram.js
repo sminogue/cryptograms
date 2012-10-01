@@ -9,9 +9,12 @@ var punctuation = RegExp("[,\.-_$%:;'\"!?]");
 // Settings configuration
 var showLetterTray = true;
 var showAnimatedSolution = true;
+var loggedInUser = null;
 
-// Function called when the document is loaded and ready. It will bind controls
-// and set up the initial display of the UI.
+/* 
+ * Function called when the document is loaded and ready. It will bind controls
+ * and set up the initial display of the UI.
+ */
 jQuery(document).ready(function() {
 
 	// Bind controls
@@ -40,9 +43,9 @@ jQuery(document).ready(function() {
 		}
 	});
 
-	jQuery('#closeSettingsButton').click(function() {
+	jQuery('.closeModalX').click(function() {
 		try {
-			closeSettingsPane();
+			closeModalDialogs();
 		} catch (e) {
 			window.location = 'error.html';
 		}
@@ -56,6 +59,8 @@ jQuery(document).ready(function() {
 		}
 	});
 
+	bindPersonaEvents();
+	
 	// Load initial puzzle
 	try {
 		loadPuzzle();
@@ -65,6 +70,71 @@ jQuery(document).ready(function() {
 
 });
 
+/**
+ * ########################################
+ *        LOGIN FUNCTIONS
+ * ########################################
+ */
+/*
+ * Function to display the login dialog
+ */
+function showLogin(){
+	showModalBackGround();
+	jQuery('#loginDialog').show();
+}
+
+function loginSuccess(assertion){
+	var obj = jQuery.parseJSON( assertion );
+	closeModalDialogs();
+	hideModalBackGround();
+}
+
+function showLogoutLink(){
+	jQuery('#loginLink').hide();
+	jQuery('#logoutLink').show();
+}
+
+function bindPersonaEvents(){
+	navigator.id.watch({
+		  loggedInUser: loggedInUser,
+		  onlogin: function(assertion) {
+		    // A user has logged in! Here you need to:
+		    // 1. Send the assertion to your backend for verification and to create a session.
+		    // 2. Update your UI.
+		    jQuery.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
+		      type: 'POST',
+		      url: 'auth/login.php', // This is a URL on your website.
+		      data: {assertion: assertion},
+		      success: function(res, status, xhr) { 
+		    	  loginSuccess(res); 
+		      },
+		      error: function(res, status, xhr) { alert("login failure" + res); }
+		    });
+		  },
+		  onlogout: function() {
+		    // A user has logged out! Here you need to:
+		    // Tear down the user's session by redirecting the user or making a call to your backend.
+		    // Also, make that loggedInUser will get set to null on the next page load.
+		    // (That's a literal JavaScript null. Not false, 0, or undefined. null.)
+			  jQuery.ajax({
+		      type: 'POST',
+		      url: 'auth/logout.php', // This is a URL on your website.
+		      success: function(res, status, xhr) { window.location.reload(); },
+		      error: function(res, status, xhr) { alert("logout failure" + res); }
+		    });
+		  }
+		});
+}
+
+
+/**
+ * ########################################
+ *        SETTINGS FUNCTIONS
+ * ########################################
+ */
+/*
+ * Save settings selections from the settings pane
+ */
 function saveSettings() {
 
 	// Get selections
@@ -79,14 +149,28 @@ function saveSettings() {
 		jQuery('.letter-tray').hide();
 	}
 
-	closeSettingsPane();
+	closeModalDialogs();
 }
 
 /*
+ * Show the settings modal panel
+ */
+function showSettingsPane() {
+	showModalBackGround();
+	jQuery('#settingsPane').show();
+}
+
+
+/**
+ * ########################################
+ *        HELPER FUNCTIONS
+ * ########################################
+ */
+/*
  * Close the settings modal panel
  */
-function closeSettingsPane() {
-	jQuery('#settingsPane').hide();
+function closeModalDialogs() {
+	jQuery('.modalDialog').hide();
 	hideModalBackGround();
 }
 
@@ -105,14 +189,12 @@ function hideModalBackGround() {
 	jQuery('.modalBackGround').hide();
 }
 
-/*
- * Show the settings modal panel
- */
-function showSettingsPane() {
-	showModalBackGround();
-	jQuery('#settingsPane').show();
-}
 
+/**
+ * ########################################
+ *        PUZZLE FUNCTIONS
+ * ########################################
+ */
 /*
  * Handle a user entering a letter into one of the textfields. If the letter is
  * used then remove it, if the letter is unused then update the entire puzzle
@@ -367,6 +449,11 @@ function showDecryptedChar(cipherChar, clearChar) {
 
 }
 
+/**
+ * ########################################
+ *        HANDLEBARS FUNCTIONS
+ * ########################################
+ */
 /*
  * Register handlebars helper to display a puzzleCell.
  */
