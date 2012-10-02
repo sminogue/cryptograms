@@ -1,5 +1,7 @@
 <?php
 
-//session_destroy();
+if(isset($_SESSION['USER'])){
+	unset($_SESSION['USER']);
+}
 
 ?>
