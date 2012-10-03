@@ -11,7 +11,7 @@ var showLetterTray = true;
 var showAnimatedSolution = true;
 var loggedInUser = null;
 
-/* 
+/*
  * Function called when the document is loaded and ready. It will bind controls
  * and set up the initial display of the UI.
  */
@@ -23,7 +23,7 @@ jQuery(document).ready(function() {
 		try {
 			solvePuzzle();
 		} catch (e) {
-			window.location = 'error.html';
+			displayErrorPage();
 		}
 	});
 
@@ -31,15 +31,15 @@ jQuery(document).ready(function() {
 		try {
 			resetPuzzle();
 		} catch (e) {
-			window.location = 'error.html';
+			displayErrorPage();
 		}
 	});
 
 	jQuery('#settings').click(function() {
 		try {
-			showSettingsPane();
+			showsettingsDialog();
 		} catch (e) {
-			window.location = 'error.html';
+			displayErrorPage();
 		}
 	});
 
@@ -47,7 +47,7 @@ jQuery(document).ready(function() {
 		try {
 			closeModalDialogs();
 		} catch (e) {
-			window.location = 'error.html';
+			displayErrorPage();
 		}
 	});
 
@@ -55,81 +55,110 @@ jQuery(document).ready(function() {
 		try {
 			saveSettings();
 		} catch (e) {
-			window.location = 'error.html';
+			displayErrorPage();
 		}
 	});
 
-	bindPersonaEvents();
+	//Load login link using handlebars
+	Handlebars.renderFromRemote('handlebars/login.handlebars', null,'.loginBar');
 	
+	bindPersonaEvents();
+
 	// Load initial puzzle
 	try {
 		loadPuzzle();
 	} catch (e) {
-		window.location = 'error.html';
+		displayErrorPage();
 	}
-
+	
+	jQuery('input, textarea, password').placeholder();
+	
 });
 
 /**
- * ########################################
- *        LOGIN FUNCTIONS
+ * ######################################## 
+ * LOGIN FUNCTIONS
  * ########################################
  */
+
+/*
+ * Perform the mozilla persona login. 
+ */
+function performPersonaLogin(){
+	closeModalDialogs();
+	hideModalBackGround();
+	navigator.id.request();
+}
+
 /*
  * Function to display the login dialog
  */
-function showLogin(){
+function showLoginDialog() {
 	showModalBackGround();
 	jQuery('#loginDialog').show();
+	centerDialog(jQuery('#loginDialog'));
+	jQuery('#userEmail').val('');
+	jQuery('#userPassword').val('');
 }
 
-function loginSuccess(assertion){
-	var obj = jQuery.parseJSON( assertion );
+/*
+ * Function to be called and handle login success from Mozilla Persona
+ */
+function personaLoginSuccessCallback(result) {
+	var obj = jQuery.parseJSON(result);
+	Handlebars.renderFromRemote('handlebars/logout.handlebars', obj,'.loginBar');
 	closeModalDialogs();
 	hideModalBackGround();
 }
 
-function showLogoutLink(){
-	jQuery('#loginLink').hide();
-	jQuery('#logoutLink').show();
+/*
+ * Function to be called and handle logout success from mozilla Persona 
+ */
+function personaLogoutSuccessCallback(){
+	window.location.reload();
 }
 
-function bindPersonaEvents(){
+/*
+ * Bind Persona Events. 
+ */
+function bindPersonaEvents() {
 	navigator.id.watch({
-		  loggedInUser: loggedInUser,
-		  onlogin: function(assertion) {
-		    // A user has logged in! Here you need to:
-		    // 1. Send the assertion to your backend for verification and to create a session.
-		    // 2. Update your UI.
-		    jQuery.ajax({ /* <-- This example uses jQuery, but you can use whatever you'd like */
-		      type: 'POST',
-		      url: 'auth/login.php', // This is a URL on your website.
-		      data: {assertion: assertion},
-		      success: function(res, status, xhr) { 
-		    	  loginSuccess(res); 
-		      },
-		      error: function(res, status, xhr) { alert("login failure" + res); }
-		    });
-		  },
-		  onlogout: function() {
-		    // A user has logged out! Here you need to:
-		    // Tear down the user's session by redirecting the user or making a call to your backend.
-		    // Also, make that loggedInUser will get set to null on the next page load.
-		    // (That's a literal JavaScript null. Not false, 0, or undefined. null.)
-			  jQuery.ajax({
-		      type: 'POST',
-		      url: 'auth/logout.php', // This is a URL on your website.
-		      success: function(res, status, xhr) { window.location.reload(); },
-		      error: function(res, status, xhr) { alert("logout failure" + res); }
-		    });
-		  }
-		});
+		loggedInUser : loggedInUser,
+		onlogin : function(assertion) {
+			jQuery.ajax({
+				type : 'POST',
+				url : 'auth/login.php',
+				data : {
+					assertion : assertion
+				},
+				success : function(res, status, xhr) {
+					personaLoginSuccessCallback(res);
+				},
+				error : function(res, status, xhr) {
+					console.log(err);
+					displayErrorPage();
+				}
+			});
+		},
+		onlogout : function() {
+			jQuery.ajax({
+				type : 'POST',
+				url : 'auth/logout.php', // This is a URL on your website.
+				success : function(res, status, xhr) {
+					personaLogoutSuccessCallback();
+				},
+				error : function(res, status, xhr) {
+					console.log(err);
+					displayErrorPage();
+				}
+			});
+		}
+	});
 }
-
 
 /**
- * ########################################
- *        SETTINGS FUNCTIONS
+ * ######################################## 
+ * SETTINGS FUNCTIONS
  * ########################################
  */
 /*
@@ -137,6 +166,9 @@ function bindPersonaEvents(){
  */
 function saveSettings() {
 
+	closeModalDialogs();
+	showProcessingDialog();
+	
 	// Get selections
 	showLetterTray = jQuery("#letter-tray").is(':checked');
 	showAnimatedSolution = jQuery("#animation").is(':checked');
@@ -155,19 +187,57 @@ function saveSettings() {
 /*
  * Show the settings modal panel
  */
-function showSettingsPane() {
+function showsettingsDialog() {
 	showModalBackGround();
-	jQuery('#settingsPane').show();
+	jQuery('#settingsDialog').show();
+	centerDialog(jQuery('#settingsDialog'));
 }
 
-
 /**
- * ########################################
- *        HELPER FUNCTIONS
+ * ######################################## 
+ * HELPER FUNCTIONS
  * ########################################
  */
+
 /*
- * Close the settings modal panel
+ * Show processing dialog
+ */
+function showProcessingDialog(){
+	showModalBackGround();
+	jQuery('#processingDialog').show();
+	centerDialog(jQuery('#processingDialog'));
+}
+
+/*
+ * Center a dialog on the screen.
+ */
+function centerDialog($jQueryDialog){
+	try{
+		var width = $jQueryDialog.width();
+		var height = $jQueryDialog.height();
+
+		var window_width = $(window).width();
+		var window_height = $(window).height();
+
+		var top = (window_height / 2) - (height / 2);
+		var left = (window_width / 2) - (width / 2);
+
+		$jQueryDialog.css('top', top);
+		$jQueryDialog.css('left', left);
+	}catch(e){
+		displayErrorPage();
+	}
+}
+
+/*
+ * Helper method to redirect to the error page.
+ */
+function displayErrorPage(){
+	window.location = 'error.html';
+}
+
+/*
+ * Close any open dialogs
  */
 function closeModalDialogs() {
 	jQuery('.modalDialog').hide();
@@ -189,10 +259,9 @@ function hideModalBackGround() {
 	jQuery('.modalBackGround').hide();
 }
 
-
 /**
- * ########################################
- *        PUZZLE FUNCTIONS
+ * ######################################## 
+ * PUZZLE FUNCTIONS
  * ########################################
  */
 /*
@@ -249,7 +318,7 @@ function loadPuzzle() {
 		try {
 			handleKeyEntry(this);
 		} catch (e) {
-			window.location = 'error.html';
+			displayErrorPage();
 		}
 	});
 
@@ -450,8 +519,8 @@ function showDecryptedChar(cipherChar, clearChar) {
 }
 
 /**
- * ########################################
- *        HANDLEBARS FUNCTIONS
+ * ######################################## 
+ * HANDLEBARS FUNCTIONS
  * ########################################
  */
 /*
