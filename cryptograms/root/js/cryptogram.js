@@ -59,6 +59,14 @@ jQuery(document).ready(function() {
 		}
 	});
 
+	jQuery('#nextButton').click(function() {
+		try {
+			nextPuzzle();
+		} catch (e) {
+			displayErrorPage();
+		}
+	});
+	
 	//Load login link using handlebars
 	Handlebars.renderFromRemote('handlebars/login.handlebars', null,'.loginBar');
 	
@@ -282,6 +290,28 @@ function handleKeyEntry(thisfield) {
 }
 
 /*
+ * Get the next puzzle
+ */
+function nextPuzzle(){
+	
+	// Show processing
+	showModalBackGround();
+	showProcessingDialog();
+	
+	// Hide submit and reset buttons
+	jQuery('#submitButton').show();
+	jQuery('#resetButton').show();
+	jQuery('#nextButton').hide();
+	
+	loadPuzzle();
+	
+	hideModalBackGround();
+	closeModalDialogs();
+	
+}
+
+
+/*
  * Reset the puzzle by clearing choices.
  */
 function resetPuzzle() {
@@ -297,6 +327,8 @@ function resetPuzzle() {
  * puzzle.
  */
 function loadPuzzle() {
+	showModalBackGround();
+	showProcessingDialog();
 	var cipherLines = null;
 	jQuery.ajax({
 		url : "webservices/getpuzzle.php",
@@ -323,6 +355,8 @@ function loadPuzzle() {
 	});
 
 	updateLetterTray();
+	hideModalBackGround();
+	closeModalDialogs();
 }
 
 /*
@@ -331,11 +365,13 @@ function loadPuzzle() {
  */
 function solvePuzzle() {
 
-	// Hide submit and reset buttons
-
-	// Show next button
-
 	// Show processing
+	showModalBackGround();
+	showProcessingDialog();
+	
+	// Hide submit and reset buttons
+	jQuery('#submitButton').hide();
+	jQuery('#resetButton').hide();
 
 	// Get string of solutuion
 	var solutionString = getSolutionString();
@@ -351,16 +387,19 @@ function solvePuzzle() {
 		success : function(data) {
 			var thing = '';
 			for ( var key in data.reverseCipher) {
-
 				if (data.cipherText.indexOf(key) != -1) {
-
 					showDecryptedChar(key, data.reverseCipher[key]);
-
 				}
-
 			}
 		}
 	});
+	
+	// Show next button
+	jQuery('#nextButton').show();
+	
+	closeModalDialogs();
+	hideModalBackGround();
+	
 }
 
 /*
