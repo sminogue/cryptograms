@@ -15,91 +15,108 @@ var loggedInUser = null;
  * Function called when the document is loaded and ready. It will bind controls
  * and set up the initial display of the UI.
  */
-jQuery(document).ready(function() {
-	try{
-		// Bind controls
-	
-		jQuery('#submitButton').click(function() {
+jQuery(document).ready(
+		function() {
 			try {
-				solvePuzzle();
+				// Bind controls
+
+				jQuery('#submitButton').click(function() {
+					try {
+						solvePuzzle();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+
+				jQuery('#resetButton').click(function() {
+					try {
+						resetPuzzle();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+
+				jQuery('#settings').click(function() {
+					try {
+						showsettingsDialog();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+
+				jQuery('.closeModalX').click(function() {
+					try {
+						closeModalDialogs();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+
+				jQuery('#saveButton').click(function() {
+					try {
+						saveSettings();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+
+				jQuery('#nextButton').click(function() {
+					try {
+						nextPuzzle();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+
+				jQuery('#skipButton').click(function() {
+					try {
+						nextPuzzle();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+				
+				// Load login link using handlebars
+				Handlebars.renderFromRemote('handlebars/login.handlebars',
+						null, '.loginBar');
+
+				bindPersonaEvents();
+
+				// Load initial puzzle
+				try {
+					loadPuzzle();
+				} catch (e) {
+					displayErrorPage();
+				}
+
+				jQuery('input, textarea, password').placeholder();
 			} catch (e) {
 				displayErrorPage();
 			}
 		});
-	
-		jQuery('#resetButton').click(function() {
-			try {
-				resetPuzzle();
-			} catch (e) {
-				displayErrorPage();
-			}
-		});
-	
-		jQuery('#settings').click(function() {
-			try {
-				showsettingsDialog();
-			} catch (e) {
-				displayErrorPage();
-			}
-		});
-	
-		jQuery('.closeModalX').click(function() {
-			try {
-				closeModalDialogs();
-			} catch (e) {
-				displayErrorPage();
-			}
-		});
-	
-		jQuery('#saveButton').click(function() {
-			try {
-				saveSettings();
-			} catch (e) {
-				displayErrorPage();
-			}
-		});
-	
-		jQuery('#nextButton').click(function() {
-			try {
-				nextPuzzle();
-			} catch (e) {
-				displayErrorPage();
-			}
-		});
-		
-		//Load login link using handlebars
-		Handlebars.renderFromRemote('handlebars/login.handlebars', null,'.loginBar');
-		
-		bindPersonaEvents();
-	
-		// Load initial puzzle
-		try {
-			loadPuzzle();
-		} catch (e) {
-			displayErrorPage();
-		}
-		
-		jQuery('input, textarea, password').placeholder();
-	}catch(e){
-		displayErrorPage();
-	}
-});
 
 /**
- * ######################################## 
+ * #############################################################################
  * LOGIN FUNCTIONS
- * ########################################
+ * #############################################################################
  */
 
 /*
- * Perform the mozilla persona login. 
+ * Perform the mozilla persona logout
  */
-function performPersonaLogin(){
-	try{
+function performPersonaLogout(){
+	navigator.id.logout();
+}
+
+/*
+ * Perform the mozilla persona login.
+ */
+function performPersonaLogin() {
+	try {
 		closeModalDialogs();
 		hideModalBackGround();
 		navigator.id.request();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -108,13 +125,13 @@ function performPersonaLogin(){
  * Function to display the login dialog
  */
 function showLoginDialog() {
-	try{
+	try {
 		showModalBackGround();
 		jQuery('#loginDialog').show();
 		centerDialog(jQuery('#loginDialog'));
 		jQuery('#userEmail').val('');
 		jQuery('#userPassword').val('');
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -123,32 +140,33 @@ function showLoginDialog() {
  * Function to be called and handle login success from Mozilla Persona
  */
 function personaLoginSuccessCallback(result) {
-	try{
+	try {
 		var obj = jQuery.parseJSON(result);
-		Handlebars.renderFromRemote('handlebars/logout.handlebars', obj,'.loginBar');
+		Handlebars.renderFromRemote('handlebars/logout.handlebars', obj,
+				'.loginBar');
 		closeModalDialogs();
 		hideModalBackGround();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
 
 /*
- * Function to be called and handle logout success from mozilla Persona 
+ * Function to be called and handle logout success from mozilla Persona
  */
-function personaLogoutSuccessCallback(){
-	try{
+function personaLogoutSuccessCallback() {
+	try {
 		window.location.reload();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
 
 /*
- * Bind Persona Events. 
+ * Bind Persona Events.
  */
 function bindPersonaEvents() {
-	try{
+	try {
 		navigator.id.watch({
 			loggedInUser : loggedInUser,
 			onlogin : function(assertion) {
@@ -170,7 +188,8 @@ function bindPersonaEvents() {
 			onlogout : function() {
 				jQuery.ajax({
 					type : 'POST',
-					url : 'auth/logout.php', // This is a URL on your website.
+					url : 'auth/logout.php', // This is a URL on your
+												// website.
 					success : function(res, status, xhr) {
 						personaLogoutSuccessCallback();
 					},
@@ -181,28 +200,28 @@ function bindPersonaEvents() {
 				});
 			}
 		});
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
 
 /**
- * ######################################## 
+ * #############################################################################
  * SETTINGS FUNCTIONS
- * ########################################
+ * #############################################################################
  */
 /*
  * Save settings selections from the settings pane
  */
 function saveSettings() {
-	try{
+	try {
 		closeModalDialogs();
 		showProcessingDialog();
-		
+
 		// Get selections
 		showLetterTray = jQuery("#letter-tray").is(':checked');
 		showAnimatedSolution = jQuery("#animation").is(':checked');
-	
+
 		// Show/Hide letter tray
 		if (showLetterTray) {
 			jQuery('.letter-tray').show();
@@ -210,9 +229,9 @@ function saveSettings() {
 		} else {
 			jQuery('.letter-tray').hide();
 		}
-	
+
 		closeModalDialogs();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -221,30 +240,30 @@ function saveSettings() {
  * Show the settings modal panel
  */
 function showsettingsDialog() {
-	try{
+	try {
 		showModalBackGround();
 		jQuery('#settingsDialog').show();
 		centerDialog(jQuery('#settingsDialog'));
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
 
 /**
- * ######################################## 
+ * #############################################################################
  * HELPER FUNCTIONS
- * ########################################
+ * #############################################################################
  */
 
 /*
  * Show processing dialog
  */
-function showProcessingDialog(){
-	try{
+function showProcessingDialog() {
+	try {
 		showModalBackGround();
 		jQuery('#processingDialog').show();
 		centerDialog(jQuery('#processingDialog'));
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -252,8 +271,8 @@ function showProcessingDialog(){
 /*
  * Center a dialog on the screen.
  */
-function centerDialog($jQueryDialog){
-	try{
+function centerDialog($jQueryDialog) {
+	try {
 		var width = $jQueryDialog.width();
 		var height = $jQueryDialog.height();
 
@@ -265,7 +284,7 @@ function centerDialog($jQueryDialog){
 
 		$jQueryDialog.css('top', top);
 		$jQueryDialog.css('left', left);
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -273,7 +292,7 @@ function centerDialog($jQueryDialog){
 /*
  * Helper method to redirect to the error page.
  */
-function displayErrorPage(){
+function displayErrorPage() {
 	window.location = 'error.html';
 }
 
@@ -281,10 +300,10 @@ function displayErrorPage(){
  * Close any open dialogs
  */
 function closeModalDialogs() {
-	try{
+	try {
 		jQuery('.modalDialog').hide();
 		hideModalBackGround();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -293,9 +312,9 @@ function closeModalDialogs() {
  * Function to show the opaque background which surrounds a modal dialog.
  */
 function showModalBackGround() {
-	try{
+	try {
 		jQuery('.modalBackGround').show();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -304,18 +323,18 @@ function showModalBackGround() {
  * Function to hide the opaque background which surrounds a modal dialog.
  */
 function hideModalBackGround() {
-	try{
+	try {
 		jQuery('.modalDialog').hide();
 		jQuery('.modalBackGround').hide();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
 
 /**
- * ######################################## 
+ * #############################################################################
  * PUZZLE FUNCTIONS
- * ########################################
+ * #############################################################################
  */
 /*
  * Handle a user entering a letter into one of the textfields. If the letter is
@@ -323,17 +342,17 @@ function hideModalBackGround() {
  * with their choice.
  */
 function handleKeyEntry(thisfield) {
-	try{
+	try {
 		var textField = jQuery(thisfield);
 		var char = textField.val();
-	
+
 		if (isLetterUsed(textField)) {
 			jQuery('.sym' + textField.attr('symbol')).val('');
 		} else {
 			jQuery('.sym' + textField.attr('symbol')).val(char);
 			updateLetterTray();
 		}
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -341,38 +360,38 @@ function handleKeyEntry(thisfield) {
 /*
  * Get the next puzzle
  */
-function nextPuzzle(){
-	try{
+function nextPuzzle() {
+	try {
 		// Show processing
 		showModalBackGround();
 		showProcessingDialog();
-		
+
 		// Hide submit and reset buttons
 		jQuery('#submitButton').show();
 		jQuery('#resetButton').show();
+		jQuery('#skipButton').show();
 		jQuery('#nextButton').hide();
-		
+
 		loadPuzzle();
-		
+
 		hideModalBackGround();
 		closeModalDialogs();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
-
 
 /*
  * Reset the puzzle by clearing choices.
  */
 function resetPuzzle() {
-	try{
+	try {
 		jQuery('.letterbox').each(function() {
 			var currentField = jQuery(this);
 			currentField.val('');
 		});
 		updateLetterTray();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -419,18 +438,19 @@ function loadPuzzle() {
  * correct or incorrect
  */
 function solvePuzzle() {
-	try{
+	try {
 		// Show processing
 		showModalBackGround();
 		showProcessingDialog();
-		
+
 		// Hide submit and reset buttons
 		jQuery('#submitButton').hide();
 		jQuery('#resetButton').hide();
-	
+		jQuery('#skipButton').show();
+
 		// Get string of solutuion
 		var solutionString = getSolutionString();
-	
+
 		// submit synchronous submission
 		jQuery.ajax({
 			url : "webservices/solvepuzzle.php",
@@ -448,13 +468,13 @@ function solvePuzzle() {
 				}
 			}
 		});
-		
+
 		// Show next button
 		jQuery('#nextButton').show();
-		
+
 		closeModalDialogs();
 		hideModalBackGround();
-	}catch(e){
+	} catch (e) {
 		displayErrorPage();
 	}
 }
@@ -615,9 +635,9 @@ function showDecryptedChar(cipherChar, clearChar) {
 }
 
 /**
- * ######################################## 
+ * ############################################################################
  * HANDLEBARS FUNCTIONS
- * ########################################
+ * ############################################################################
  */
 /*
  * Register handlebars helper to display a puzzleCell.
@@ -626,11 +646,11 @@ Handlebars
 		.registerHelper(
 				'puzzleCell',
 				function(cipherChar) {
-					try{
+					try {
 						if (punctuation.test(cipherChar)) {
 							return new Handlebars.SafeString(
-									'<div class="punctuationLetter">' + cipherChar
-											+ '</div>');
+									'<div class="punctuationLetter">'
+											+ cipherChar + '</div>');
 						} else if ('' === cipherChar || ' ' === cipherChar) {
 							return new Handlebars.SafeString(
 									'<div class="cipherLetter">' + cipherChar
@@ -645,7 +665,7 @@ Handlebars
 											+ cipherChar + '">' + cipherChar
 											+ '</div>');
 						}
-					}catch(e){
+					} catch (e) {
 						displayErrorPage();
 					}
 				});
