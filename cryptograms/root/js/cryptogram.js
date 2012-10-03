@@ -16,71 +16,73 @@ var loggedInUser = null;
  * and set up the initial display of the UI.
  */
 jQuery(document).ready(function() {
-
-	// Bind controls
-
-	jQuery('#submitButton').click(function() {
-		try {
-			solvePuzzle();
-		} catch (e) {
-			displayErrorPage();
-		}
-	});
-
-	jQuery('#resetButton').click(function() {
-		try {
-			resetPuzzle();
-		} catch (e) {
-			displayErrorPage();
-		}
-	});
-
-	jQuery('#settings').click(function() {
-		try {
-			showsettingsDialog();
-		} catch (e) {
-			displayErrorPage();
-		}
-	});
-
-	jQuery('.closeModalX').click(function() {
-		try {
-			closeModalDialogs();
-		} catch (e) {
-			displayErrorPage();
-		}
-	});
-
-	jQuery('#saveButton').click(function() {
-		try {
-			saveSettings();
-		} catch (e) {
-			displayErrorPage();
-		}
-	});
-
-	jQuery('#nextButton').click(function() {
-		try {
-			nextPuzzle();
-		} catch (e) {
-			displayErrorPage();
-		}
-	});
+	try{
+		// Bind controls
 	
-	//Load login link using handlebars
-	Handlebars.renderFromRemote('handlebars/login.handlebars', null,'.loginBar');
+		jQuery('#submitButton').click(function() {
+			try {
+				solvePuzzle();
+			} catch (e) {
+				displayErrorPage();
+			}
+		});
 	
-	bindPersonaEvents();
-
-	// Load initial puzzle
-	try {
-		loadPuzzle();
-	} catch (e) {
+		jQuery('#resetButton').click(function() {
+			try {
+				resetPuzzle();
+			} catch (e) {
+				displayErrorPage();
+			}
+		});
+	
+		jQuery('#settings').click(function() {
+			try {
+				showsettingsDialog();
+			} catch (e) {
+				displayErrorPage();
+			}
+		});
+	
+		jQuery('.closeModalX').click(function() {
+			try {
+				closeModalDialogs();
+			} catch (e) {
+				displayErrorPage();
+			}
+		});
+	
+		jQuery('#saveButton').click(function() {
+			try {
+				saveSettings();
+			} catch (e) {
+				displayErrorPage();
+			}
+		});
+	
+		jQuery('#nextButton').click(function() {
+			try {
+				nextPuzzle();
+			} catch (e) {
+				displayErrorPage();
+			}
+		});
+		
+		//Load login link using handlebars
+		Handlebars.renderFromRemote('handlebars/login.handlebars', null,'.loginBar');
+		
+		bindPersonaEvents();
+	
+		// Load initial puzzle
+		try {
+			loadPuzzle();
+		} catch (e) {
+			displayErrorPage();
+		}
+		
+		jQuery('input, textarea, password').placeholder();
+	}catch(e){
 		displayErrorPage();
 	}
-	
-	jQuery('input, textarea, password').placeholder();
-	
 });
 
 /**
@@ -93,75 +95,95 @@ jQuery(document).ready(function() {
  * Perform the mozilla persona login. 
  */
 function performPersonaLogin(){
-	closeModalDialogs();
-	hideModalBackGround();
-	navigator.id.request();
+	try{
+		closeModalDialogs();
+		hideModalBackGround();
+		navigator.id.request();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
  * Function to display the login dialog
  */
 function showLoginDialog() {
-	showModalBackGround();
-	jQuery('#loginDialog').show();
-	centerDialog(jQuery('#loginDialog'));
-	jQuery('#userEmail').val('');
-	jQuery('#userPassword').val('');
+	try{
+		showModalBackGround();
+		jQuery('#loginDialog').show();
+		centerDialog(jQuery('#loginDialog'));
+		jQuery('#userEmail').val('');
+		jQuery('#userPassword').val('');
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
  * Function to be called and handle login success from Mozilla Persona
  */
 function personaLoginSuccessCallback(result) {
-	var obj = jQuery.parseJSON(result);
-	Handlebars.renderFromRemote('handlebars/logout.handlebars', obj,'.loginBar');
-	closeModalDialogs();
-	hideModalBackGround();
+	try{
+		var obj = jQuery.parseJSON(result);
+		Handlebars.renderFromRemote('handlebars/logout.handlebars', obj,'.loginBar');
+		closeModalDialogs();
+		hideModalBackGround();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
  * Function to be called and handle logout success from mozilla Persona 
  */
 function personaLogoutSuccessCallback(){
-	window.location.reload();
+	try{
+		window.location.reload();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
  * Bind Persona Events. 
  */
 function bindPersonaEvents() {
-	navigator.id.watch({
-		loggedInUser : loggedInUser,
-		onlogin : function(assertion) {
-			jQuery.ajax({
-				type : 'POST',
-				url : 'auth/login.php',
-				data : {
-					assertion : assertion
-				},
-				success : function(res, status, xhr) {
-					personaLoginSuccessCallback(res);
-				},
-				error : function(res, status, xhr) {
-					console.log(err);
-					displayErrorPage();
-				}
-			});
-		},
-		onlogout : function() {
-			jQuery.ajax({
-				type : 'POST',
-				url : 'auth/logout.php', // This is a URL on your website.
-				success : function(res, status, xhr) {
-					personaLogoutSuccessCallback();
-				},
-				error : function(res, status, xhr) {
-					console.log(err);
-					displayErrorPage();
-				}
-			});
-		}
-	});
+	try{
+		navigator.id.watch({
+			loggedInUser : loggedInUser,
+			onlogin : function(assertion) {
+				jQuery.ajax({
+					type : 'POST',
+					url : 'auth/login.php',
+					data : {
+						assertion : assertion
+					},
+					success : function(res, status, xhr) {
+						personaLoginSuccessCallback(res);
+					},
+					error : function(res, status, xhr) {
+						console.log(err);
+						displayErrorPage();
+					}
+				});
+			},
+			onlogout : function() {
+				jQuery.ajax({
+					type : 'POST',
+					url : 'auth/logout.php', // This is a URL on your website.
+					success : function(res, status, xhr) {
+						personaLogoutSuccessCallback();
+					},
+					error : function(res, status, xhr) {
+						console.log(err);
+						displayErrorPage();
+					}
+				});
+			}
+		});
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /**
@@ -173,32 +195,39 @@ function bindPersonaEvents() {
  * Save settings selections from the settings pane
  */
 function saveSettings() {
-
-	closeModalDialogs();
-	showProcessingDialog();
+	try{
+		closeModalDialogs();
+		showProcessingDialog();
+		
+		// Get selections
+		showLetterTray = jQuery("#letter-tray").is(':checked');
+		showAnimatedSolution = jQuery("#animation").is(':checked');
 	
-	// Get selections
-	showLetterTray = jQuery("#letter-tray").is(':checked');
-	showAnimatedSolution = jQuery("#animation").is(':checked');
-
-	// Show/Hide letter tray
-	if (showLetterTray) {
-		jQuery('.letter-tray').show();
-		updateLetterTray();
-	} else {
-		jQuery('.letter-tray').hide();
+		// Show/Hide letter tray
+		if (showLetterTray) {
+			jQuery('.letter-tray').show();
+			updateLetterTray();
+		} else {
+			jQuery('.letter-tray').hide();
+		}
+	
+		closeModalDialogs();
+	}catch(e){
+		displayErrorPage();
 	}
-
-	closeModalDialogs();
 }
 
 /*
  * Show the settings modal panel
  */
 function showsettingsDialog() {
-	showModalBackGround();
-	jQuery('#settingsDialog').show();
-	centerDialog(jQuery('#settingsDialog'));
+	try{
+		showModalBackGround();
+		jQuery('#settingsDialog').show();
+		centerDialog(jQuery('#settingsDialog'));
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /**
@@ -211,9 +240,13 @@ function showsettingsDialog() {
  * Show processing dialog
  */
 function showProcessingDialog(){
-	showModalBackGround();
-	jQuery('#processingDialog').show();
-	centerDialog(jQuery('#processingDialog'));
+	try{
+		showModalBackGround();
+		jQuery('#processingDialog').show();
+		centerDialog(jQuery('#processingDialog'));
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
@@ -248,23 +281,35 @@ function displayErrorPage(){
  * Close any open dialogs
  */
 function closeModalDialogs() {
-	jQuery('.modalDialog').hide();
-	hideModalBackGround();
+	try{
+		jQuery('.modalDialog').hide();
+		hideModalBackGround();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
  * Function to show the opaque background which surrounds a modal dialog.
  */
 function showModalBackGround() {
-	jQuery('.modalBackGround').show();
+	try{
+		jQuery('.modalBackGround').show();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
  * Function to hide the opaque background which surrounds a modal dialog.
  */
 function hideModalBackGround() {
-	jQuery('.modalDialog').hide();
-	jQuery('.modalBackGround').hide();
+	try{
+		jQuery('.modalDialog').hide();
+		jQuery('.modalBackGround').hide();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /**
@@ -278,14 +323,18 @@ function hideModalBackGround() {
  * with their choice.
  */
 function handleKeyEntry(thisfield) {
-	var textField = jQuery(thisfield);
-	var char = textField.val();
-
-	if (isLetterUsed(textField)) {
-		jQuery('.sym' + textField.attr('symbol')).val('');
-	} else {
-		jQuery('.sym' + textField.attr('symbol')).val(char);
-		updateLetterTray();
+	try{
+		var textField = jQuery(thisfield);
+		var char = textField.val();
+	
+		if (isLetterUsed(textField)) {
+			jQuery('.sym' + textField.attr('symbol')).val('');
+		} else {
+			jQuery('.sym' + textField.attr('symbol')).val(char);
+			updateLetterTray();
+		}
+	}catch(e){
+		displayErrorPage();
 	}
 }
 
@@ -293,21 +342,23 @@ function handleKeyEntry(thisfield) {
  * Get the next puzzle
  */
 function nextPuzzle(){
-	
-	// Show processing
-	showModalBackGround();
-	showProcessingDialog();
-	
-	// Hide submit and reset buttons
-	jQuery('#submitButton').show();
-	jQuery('#resetButton').show();
-	jQuery('#nextButton').hide();
-	
-	loadPuzzle();
-	
-	hideModalBackGround();
-	closeModalDialogs();
-	
+	try{
+		// Show processing
+		showModalBackGround();
+		showProcessingDialog();
+		
+		// Hide submit and reset buttons
+		jQuery('#submitButton').show();
+		jQuery('#resetButton').show();
+		jQuery('#nextButton').hide();
+		
+		loadPuzzle();
+		
+		hideModalBackGround();
+		closeModalDialogs();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 
@@ -315,11 +366,15 @@ function nextPuzzle(){
  * Reset the puzzle by clearing choices.
  */
 function resetPuzzle() {
-	jQuery('.letterbox').each(function() {
-		var currentField = jQuery(this);
-		currentField.val('');
-	});
-	updateLetterTray();
+	try{
+		jQuery('.letterbox').each(function() {
+			var currentField = jQuery(this);
+			currentField.val('');
+		});
+		updateLetterTray();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
@@ -364,42 +419,44 @@ function loadPuzzle() {
  * correct or incorrect
  */
 function solvePuzzle() {
-
-	// Show processing
-	showModalBackGround();
-	showProcessingDialog();
+	try{
+		// Show processing
+		showModalBackGround();
+		showProcessingDialog();
+		
+		// Hide submit and reset buttons
+		jQuery('#submitButton').hide();
+		jQuery('#resetButton').hide();
 	
-	// Hide submit and reset buttons
-	jQuery('#submitButton').hide();
-	jQuery('#resetButton').hide();
-
-	// Get string of solutuion
-	var solutionString = getSolutionString();
-
-	// submit synchronous submission
-	jQuery.ajax({
-		url : "webservices/solvepuzzle.php",
-		data : {
-			'solution' : solutionString
-		},
-		dataType : 'json',
-		async : false,
-		success : function(data) {
-			var thing = '';
-			for ( var key in data.reverseCipher) {
-				if (data.cipherText.indexOf(key) != -1) {
-					showDecryptedChar(key, data.reverseCipher[key]);
+		// Get string of solutuion
+		var solutionString = getSolutionString();
+	
+		// submit synchronous submission
+		jQuery.ajax({
+			url : "webservices/solvepuzzle.php",
+			data : {
+				'solution' : solutionString
+			},
+			dataType : 'json',
+			async : false,
+			success : function(data) {
+				var thing = '';
+				for ( var key in data.reverseCipher) {
+					if (data.cipherText.indexOf(key) != -1) {
+						showDecryptedChar(key, data.reverseCipher[key]);
+					}
 				}
 			}
-		}
-	});
-	
-	// Show next button
-	jQuery('#nextButton').show();
-	
-	closeModalDialogs();
-	hideModalBackGround();
-	
+		});
+		
+		// Show next button
+		jQuery('#nextButton').show();
+		
+		closeModalDialogs();
+		hideModalBackGround();
+	}catch(e){
+		displayErrorPage();
+	}
 }
 
 /*
@@ -569,24 +626,26 @@ Handlebars
 		.registerHelper(
 				'puzzleCell',
 				function(cipherChar) {
-
-					if (punctuation.test(cipherChar)) {
-						return new Handlebars.SafeString(
-								'<div class="punctuationLetter">' + cipherChar
-										+ '</div>');
-					} else if ('' === cipherChar || ' ' === cipherChar) {
-						return new Handlebars.SafeString(
-								'<div class="cipherLetter">' + cipherChar
-										+ '</div>');
-					} else {
-						return new Handlebars.SafeString(
-								'<input class="letterbox sym'
-										+ cipherChar
-										+ '" symbol="'
-										+ cipherChar
-										+ '" type="text" size="1" maxlength="1"/><div class="cipherLetter '
-										+ cipherChar + '">' + cipherChar
-										+ '</div>');
+					try{
+						if (punctuation.test(cipherChar)) {
+							return new Handlebars.SafeString(
+									'<div class="punctuationLetter">' + cipherChar
+											+ '</div>');
+						} else if ('' === cipherChar || ' ' === cipherChar) {
+							return new Handlebars.SafeString(
+									'<div class="cipherLetter">' + cipherChar
+											+ '</div>');
+						} else {
+							return new Handlebars.SafeString(
+									'<input class="letterbox sym'
+											+ cipherChar
+											+ '" symbol="'
+											+ cipherChar
+											+ '" type="text" size="1" maxlength="1"/><div class="cipherLetter '
+											+ cipherChar + '">' + cipherChar
+											+ '</div>');
+						}
+					}catch(e){
+						displayErrorPage();
 					}
-
 				});
