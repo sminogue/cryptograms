@@ -17,7 +17,6 @@
 		window.location = "loaderror.html";
 	}
 </script>
-
 </head>
 <body>
 	<div class="loginBar"></div>
@@ -33,32 +32,58 @@
 			<div style="clear: both;"></div>
 		</div>
 		<div id="controlBar" class="controls">
-			<input id="submitButton" type="button" value="Submit" /><input id="resetButton" type="button" value="Reset" /><input id="skipButton" type="button" value="Skip" /><input id="nextButton" style="display:none;" type="button" value="Next" />
+			<input id="submitButton" type="button" value="Submit" />
+			<input id="resetButton" type="button" value="Reset" />
+			<input id="skipButton" type="button" value="Skip" />
+			<input id="nextButton" style="display:none;" type="button" value="Next" />
 		</div>
 	</div>
-	
+
+	<input type="button" value="Register" onclick="showRegisterDialog();"/>
+
 	<!-- Dialogs -->
 	<div class="modalBackGround"></div>
-	
+
 	<!-- Login Dialogs -->
 	<div id="loginDialog" class="modalDialog">
 		<div id="closeLoginButton" class="closeModalX button"></div>
 		<div class="modal-content">
 			<div>
-				<div class="instructions" style="padding-left: 10px;">Sign in using your email and password</div>
-				<input type="text" size="40" id="userEmail" placeholder="Enter your email"/><br>
-				<input type="password" size="40" id="userPassword" placeholder="Enter your password"/><br>
-				<input type="button" value="Sign In"><input type="button" value="Register">
+				<h1>Login</h1>
+				<p>Use your email/password or mozilla persona to login.</p>
+				<div style="text-align:center;">
+					<input size="40" id="userEmail" type="email" placeholder="Enter your email"/>
+					<input type="password" size="40" id="userPassword" placeholder="Enter your password"/>
+					<input type="button" value="Sign In" id="loginButton"><input type="button" value="Register" id="showRegisterButton">
+				</div>
 			</div>
 			<hr>
-			<div style="margin-top: 15px;">
-			<span class="instructions">Sign in using Mozilla&apos;s persona</span>
-			<br>
-			<a href="#" class="persona-button" onclick="performPersonaLogin();"><span>Sign In</span></a>
+			<div style="text-align: center; margin-top: 15px;">
+				<a href="#" class="persona-button" onclick="performPersonaLogin();"><span>Mozilla Persona Sign In</span></a>
 			</div>
 		</div>
 	</div>
-	
+
+	<div id="registerDialog" class="modalDialog">
+		<div id="closeSettingsButton" class="closeModalX button"></div>
+		<div class="modal-content">
+			<h1>Register</h1>
+			<p>Please fill in the following form to create your account.</p>
+			<div id="registerErrorPanel" class="errorPanel"></div>
+			<label id="registerEmailLabel">Email:</label>
+			<input type="text" size="30" id="registerEmail" name="email"/>
+			
+			<label>Password:</label>
+			<input type="password" size="30" id="registerPassword"/>
+			
+			<label>Verify Password:</label>
+			<input type="password" size="30" id="verifyRegisterPassword"/>
+			
+			<input type="button" value="Register" id="registerButton"/>
+			<div class="spacer"></div>
+		</div>
+	</div>
+
 	<!-- Settings panel dialog -->
 	<div id="settingsDialog" class="modalDialog">
 		<div id="closeSettingsButton" class="closeModalX button"></div>
@@ -78,10 +103,9 @@
 			<input type="button" id="saveButton" value="Save"/>
 		</div>
 	</div>
-	
+
 	<div id="processingDialog" class="modalDialog">
 		<img alt="Processing..." src="images/ajax-loader.gif">
 	</div>
-	
 </body>
 </html>

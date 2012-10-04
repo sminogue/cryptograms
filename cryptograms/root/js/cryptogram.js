@@ -20,6 +20,7 @@ jQuery(document).ready(
 			try {
 				// Bind controls
 
+				//Bind Submit Puzzle Solution Button
 				jQuery('#submitButton').click(function() {
 					try {
 						solvePuzzle();
@@ -28,6 +29,7 @@ jQuery(document).ready(
 					}
 				});
 
+				//Bind Reset Puzzle Button
 				jQuery('#resetButton').click(function() {
 					try {
 						resetPuzzle();
@@ -36,6 +38,7 @@ jQuery(document).ready(
 					}
 				});
 
+				//Bind settings image button
 				jQuery('#settings').click(function() {
 					try {
 						showsettingsDialog();
@@ -44,6 +47,7 @@ jQuery(document).ready(
 					}
 				});
 
+				//Bind all close dialog X's
 				jQuery('.closeModalX').click(function() {
 					try {
 						closeModalDialogs();
@@ -52,6 +56,7 @@ jQuery(document).ready(
 					}
 				});
 
+				//Bind save button on settings panel
 				jQuery('#saveButton').click(function() {
 					try {
 						saveSettings();
@@ -60,6 +65,7 @@ jQuery(document).ready(
 					}
 				});
 
+				//Bind next puzzle button
 				jQuery('#nextButton').click(function() {
 					try {
 						nextPuzzle();
@@ -68,6 +74,7 @@ jQuery(document).ready(
 					}
 				});
 
+				//Bind skip puzzle button
 				jQuery('#skipButton').click(function() {
 					try {
 						nextPuzzle();
@@ -75,10 +82,37 @@ jQuery(document).ready(
 						displayErrorPage();
 					}
 				});
-				
+
+				//Bind Register button on registration form
+				jQuery('#registerButton').click(function() {
+					try{
+						registerUser();
+					}catch(e){
+						displayErrorPage();
+					}
+				});
+
+				//Bind login button on login form
+				jQuery('#loginButton').click(function() {
+					try {
+						loginUser();
+					} catch (e) {
+						displayErrorPage();
+					}
+				});
+
+				//Bind show registeration form button
+				jQuery('#showRegisterButton').click(function() {
+					try{
+						showRegisterDialog();
+					}catch(e){
+						displayErrorPage();
+					}
+				});
+
 				// Load login link using handlebars
 				Handlebars.renderFromRemote('handlebars/login.handlebars',
-						null, '.loginBar');
+					null, '.loginBar');
 
 				bindPersonaEvents();
 
@@ -100,6 +134,38 @@ jQuery(document).ready(
  * LOGIN FUNCTIONS
  * #############################################################################
  */
+
+/*
+ *
+ */
+function loginUser(){
+	//TODO perform login
+	
+	closeModalDialogs();
+	hideModalBackGround();
+}
+
+/*
+ * Perform user registration from the register form.
+ */
+function registerUser(){
+	//TODO perform registration
+	//Perform Validation
+	if(jQuery('#registerEmail').val() == ''){
+		jQuery('#registerErrorPanel').show();
+		jQuery('#registerErrorPanel').html('Missing Required Field: Email');
+		jQuery('#registerEmail').addClass('errorField');
+	}
+	
+	//Make call to AJAX
+	
+	//Assess result of ajax call NOTE This will also log the user in
+	
+	//If account created properly then close dialog
+	
+	closeModalDialogs();
+	hideModalBackGround();
+}
 
 /*
  * Perform the mozilla persona logout
@@ -134,6 +200,20 @@ function showLoginDialog() {
 	} catch (e) {
 		displayErrorPage();
 	}
+}
+
+function showRegisterDialog(){
+	
+	try{
+		closeModalDialogs();
+		showModalBackGround();
+		jQuery('#registerDialog').show();
+		centerDialog(jQuery('#registerDialog'));
+		jQuery('#registerErrorPanel').hide();
+	}catch(e){
+		displayErrorPage();
+	}
+	
 }
 
 /*
